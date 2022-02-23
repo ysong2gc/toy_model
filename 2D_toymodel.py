@@ -36,8 +36,7 @@ def get_model(flat_field, snr):
 fig3,axs3=plt.subplots(ncols=5,nrows=1,figsize=(30,5))
 newshape=list(gauss.shape)
 newshape.append(5)
-
-stacked_tsmaps=np.zeros(tuple(newshape))
+stacked_tsmaps=np.zeros(tuple(newshape)) ##Create a 3D array for easier storing of the 5 stacked TS maps then plotting them. 
 for stack_i in range(5):
     no_of_stacks=(stack_i+1)*10
     for ijkijk in range(no_of_stacks):
@@ -51,14 +50,14 @@ for stack_i in range(5):
 
         for i in range(71):
             for j in range(71):
-                tsmap[i,j]=-2*(np.log(1+snr)*roi[i,j]-snr*model[i,j])
+                tsmap[i,j]=-2*(np.log(1+snr)*roi[i,j]-snr*model[i,j])###Calculating TS value pixel by pixel. 
         stacked_tsmaps[:,:,stack_i]=stacked_tsmaps[:,:,stack_i]+tsmap
 vmin=stacked_tsmaps.min()
 vmax=stacked_tsmaps.max()
-for i in range(len(axs3.flat)):#(axs in axs.flat) & :
+for i in range(len(axs3.flat)):
     ax=axs3.flat[i]
     im=ax.imshow(stacked_tsmaps[:,:,i],vmax=vmax)
-    ax.set_title('Stacked TS map,'+str(stack_i)+'ROIs, SNR = '+str(snr))
+    ax.set_title('Stacked TS map,'+str((i+1)*10)+'ROIs, SNR = '+str(snr))
     if i==0:
         ax.set_ylabel(r'Dec Offset',fontsize=16)
     ax.set_yticks([5,15,25,35,45,55,65])
@@ -75,17 +74,16 @@ fig3.savefig('stacked_tsmaps.png')
 ts_roi=np.array([]) ##TS value of the central source
 #print(snr)
 for nroi in range(40):
-    for ijkijk in range(nroi+1):
-        tsmap=np.zeros(gauss.shape)
-        roi=np.zeros(gauss.shape)
-        for i in range(71):
-            for j in range(71):
-                model[i,j]=flat_field*gauss[i,j]*snr+flat_field
-                roi[i,j]=np.random.poisson(flat_field)*gauss[i,j]*snr+np.random.poisson(flat_field)
+    tsmap=np.zeros(gauss.shape)
+    roi=np.zeros(gauss.shape)
+    for i in range(71):
+        for j in range(71):
+            model[i,j]=flat_field*gauss[i,j]*snr+flat_field
+            roi[i,j]=np.random.poisson(flat_field)*gauss[i,j]*snr+np.random.poisson(flat_field)
 
-        for i in range(71):
-            for j in range(71):
-                tsmap[i,j]=-2*(np.log(1+snr)*roi[i,j]-snr*model[i,j])
+    for i in range(71):
+        for j in range(71):
+            tsmap[i,j]=-2*(np.log(1+snr)*roi[i,j]-snr*model[i,j])
     ts_roi=np.append(ts_roi, np.average(tsmap[34:37,34:37])) ##TS value here, is calculated as the average of the central 9 pixels. 
 
     
