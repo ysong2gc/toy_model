@@ -5,8 +5,8 @@ from scipy import stats
 
 
 def gaussian_2d(npix): #Use odd number!!!
-    ###Creating 2D grid
-    #x, y = np.meshgrid(np.linspace(-35,35,71), np.linspace(-35,35,71))
+    ###Creating square 2D grid and the Gaussian shape of the source. 
+    ###npix is the pixel number in each axis. It is preferred to use an odd number. 
     x, y = np.meshgrid(np.linspace(-int(npix/2),int(npix/2),npix), np.linspace(-int(npix/2),int(npix/2),npix))
     dst = np.sqrt(x*x+y*y)
 
@@ -23,9 +23,12 @@ snr = 0.5   ###signal to noise ratio
 npix = 71 ##No of pixels per axis, with 0.1deg/pixel gridding
 
 
-def get_roi(npix, nypixflat_field, snr):
+def get_roi(npix, flat_field, snr):
+    ###npix is the pixel number in each axis. It is preferred to use an odd number. 
+    ###flat_field is the average noise/background photon counts level.
+    ###snr is the signal_to_noise ratio. 
     gauss = gaussian_2d(npix)
-    ##This below is how to construct a simulated observations. 
+    ##This below is to construct a simulated observations. 
     roi=np.zeros(gauss.shape)
     for i in range(71):
         for j in range(71):
@@ -33,11 +36,17 @@ def get_roi(npix, nypixflat_field, snr):
     return(roi)
 
 def get_model(npix,flat_field, snr):
+    ###npix is the pixel number in each axis. It is preferred to use an odd number. 
+    ###flat_field is the average noise/background photon counts level.
+    ###snr is the signal_to_noise ratio. 
     gauss = gaussian_2d(npix)
     model = gauss * flat_field * snr + flat_field #Theoretical photon count in each pixel. 
     return(model)
 
 def get_tsmap(npix,flat_field, snr):
+    ###npix is the pixel number in each axis. It is preferred to use an odd number. 
+    ###flat_field is the average noise/background photon counts level.
+    ###snr is the signal_to_noise ratio. 
     gauss = gaussian_2d(npix)
     roi = get_roi(npix, flat_field, snr)
     model = get_model(npix, flat_field, snr)
@@ -50,6 +59,10 @@ def get_tsmap(npix,flat_field, snr):
     return(tsmap, np.mean(tsmap[int(npix/2)-1:int(npix/2)+2,int(npix/2)-1:int(npix/2)+2])) 
 
 def stack_tsmaps(npix, flat_field, snr, no_of_stacks):
+    ###npix is the pixel number in each axis. It is preferred to use an odd number. 
+    ###flat_field is the average noise/background photon counts level.
+    ###snr is the signal_to_noise ratio. 
+    ###no_of_stacks is the number of ROIs to be used in the stack. 
     gauss = gaussian_2d(npix)
     stacked_tsmap = np.zeros(gauss.shape)
     ts_values = np.array([])
@@ -64,7 +77,6 @@ if __name__ == "__main__":
     ##This below produces the series of stacked TS maps in the slides
     fig3,axs3=plt.subplots(ncols=5,nrows=1,figsize=(30,5))
     newshape=list(gauss.shape)
-    print(gauss.shape)
     newshape.append(5)
     stacked_tsmaps=np.zeros(tuple(newshape)) ##Create a 3D array for easier storing of the 5 stacked TS maps then plotting them. 
     for stack_i in range(5):
