@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 from scipy import stats
 from scipy.integrate import quad
 def log_like(pix, ave):
+    ##Likelihood value of the entire ROI when it's a flat field.
+    ##pix is the array containing the simulated photon counts in all the pixels.
+    ##ave is the flat field noise/background photon count
     sum=0
     l=len(pix)
     for i in range(l):
@@ -10,6 +13,11 @@ def log_like(pix, ave):
     return sum-len(pix)*ave
 
 def log_like_f(pix, ave, fave=0):
+    ##Calculating the likelihood value of the ROI.
+    ##pix is the array containing the simulated photon counts in all the pixels.
+    ##ave is the flat field noise/background photon count
+    ##fave is the photon count of the source (normalization of the gaussian)
+    
     ####Count # of pixels in rings in Gaussian star, circular Gaussian source with 0.5deg FWHM
     nring=np.pi*(2*np.linspace(0,9,10)+1)+0.5
     nring=nring.astype(int)
