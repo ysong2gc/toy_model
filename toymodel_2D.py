@@ -64,6 +64,7 @@ if __name__ == "__main__":
     ##This below produces the series of stacked TS maps in the slides
     fig3,axs3=plt.subplots(ncols=5,nrows=1,figsize=(30,5))
     newshape=list(gauss.shape)
+    print(gauss.shape)
     newshape.append(5)
     stacked_tsmaps=np.zeros(tuple(newshape)) ##Create a 3D array for easier storing of the 5 stacked TS maps then plotting them. 
     for stack_i in range(5):
